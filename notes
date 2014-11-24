@@ -1,0 +1,53 @@
+
+
+Address | Byte1       | Byte2
+--------|-------------|-----------
+$10086  | CRB         | Not in use
+$10084  | CRA         | Not in use
+$10082  | PIAB / DDRB | Not in use
+$10080  | PIAA / DDRA | Not in use
+
+	CLR.B	$10084		; Nollställ CRA (bit 2=0 -> $10080 = DDR A)
+	MOVE.B	#$F0,$10080	; Sätt DDR A = 11110000
+				; PIA A0-PIA A3 = ingångar (0)
+				; PIA A4-PIA A7 = utgångar (1)
+	MOVE.B	#$04,$10084	; Slutvärde CRA (bit 2=1 -> $10080 = PORT A)
+
+Hur vi satt upp PIAB mot en 9368 som är länkad till en siffervisare
+PIAB0 -0- |------| -0- |   _0_
+PIAB1 -1- | 9368 | -1- | 5|   |1
+PIAB2 -2- |      | -2- |  |_6_|
+PIAB3 -3- |      | -3- | 4|   |2
+          |      | -4- |  |_3_| .7
+          |      | -5- |
+          |      | -6- |
+          |------| -7- |
+
+Konfa PIA så att den kan användar för att driva en 7-segmentssiffra utan 9368
+	CLR.B	$10086		; Nollställ CRB (bit 2=0 -> $10082 = DDR B)
+	MOVE.B	#$7F,$10082	; Sätt DDRB = 01111111
+	MOVE.B	#$04,$10086	; Slutvärde CRB (bit 2=1 -> $10082 = PORT B)
+
+Hur skriver vi en 3a? 
+Kräver att vi sätter bitarna 0 1 2 3 6 (vilket ger 01001111), vilket är #$4F
+	MOVE.B	#$4F,$10082	; Visar en 3a i displayen
+
+Bäst vi gör en tabell av det hela:
+TAB:	DC.B	$FC		; 0
+	DC.B	$60		; 1
+	DC.B	$..
+	DC.B	$4F		; 3
+
+PRT:	LEA	#TAB,A0		; Tabellstartpekare
+	AND.L	#$0000000F,D1	; Begränsa talet 0-15
+	MOVE.B	(A0,D1),$10082	; Skicka A0[D1] till output
+	RTS
+
+Läs av fallande flank på CA 2 (bit 6 har satts till 1)
+	AND.B	#$C7,$10084	; $10084 = 1000111
+AGN:	MOVE.B	$10084,D0	
+	AND.B	#$40,D0		
+	BEQ	AGN
+
+För att nollställa IRQA1 || IRQA2, måste man läsa $10080 / PORT A
+T ex, OR med 0, AND med 1
