@@ -33,7 +33,7 @@ Kräver att vi sätter bitarna 0 1 2 3 6 (vilket ger 01001111), vilket är #$4F
 	MOVE.B	#$4F,$10082	; Visar en 3a i displayen
 
 Bäst vi gör en tabell av det hela:
-TAB:	DC.B	$FC		; 0
+TAB:	DC.B	$FC		; 0 .. eller $3F pga endianness?
 	DC.B	$60		; 1
 	DC.B	$..
 	DC.B	$4F		; 3
@@ -51,3 +51,8 @@ AGN:	MOVE.B	$10084,D0
 
 För att nollställa IRQA1 || IRQA2, måste man läsa $10080 / PORT A
 T ex, OR med 0, AND med 1
+
+
+MOVE.L	MUX,$68
+MOVE.L	BCD,$74
+AND.W	_,SR		; Nolla 3 bitar någonstans, heter I0-I2
