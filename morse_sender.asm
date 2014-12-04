@@ -1,5 +1,5 @@
 *-----------------------------------------------------------
-* Title      : Morse Lab
+* Title      : Morse Sender
 * Written by : Olle Kvarnström / Hampus Andersson
 * Date       : 2014-11-28
 * Description: This program takes a string and outputs it to a speaker,

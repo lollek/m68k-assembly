@@ -1,5 +1,5 @@
 *-----------------------------------------------------------
-* Title      : IR Lab
+* Title      : IR Sender / Receiver
 * Written by : Olle Kvarnström / Hampus Andersson
 * Date       : 2014-11-20
 * Description: This program reads data from an IR-reader connected to the first
